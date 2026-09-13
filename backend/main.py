@@ -44,13 +44,19 @@ app = FastAPI(
 # ============================================================
 # CORS
 # ============================================================
+FRONTEND_URL = os.getenv("FRONTEND_URL", "").strip()
+
+ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+]
+
+if FRONTEND_URL:
+    ALLOWED_ORIGINS.append(FRONTEND_URL)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:3000",
-        "http://127.0.0.1:3000",
-    ],
+    allow_origins=ALLOWED_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -815,7 +821,12 @@ def root():
             else "Gemini not configured"
         ),
     }
-
+@app.get("/health")
+def health():
+    return {
+        "status": "healthy",
+        "service": "Paytm GrowthPilot API",
+    }
 
 # ============================================================
 # DASHBOARD
